@@ -26,7 +26,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ secrets.DOCKER_USERNAME  }}/shadcn-datatable-practica
+          images: ${{ secrets.DOCKER_USERNAME  }}/shadcn-data-table-clone
           tags: |
             type=raw,value=build-${{ github.run_number }}
             
