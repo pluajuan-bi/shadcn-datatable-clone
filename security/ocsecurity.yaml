@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  # El nombre que usarás para referenciar esta ServiceAccount
+  name: cicd-service-account-dt
+  # Opcional: El namespace donde se creará. Si se omite, se usará 'default'.
+  namespace: pluaj-dev-dev
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: cicd-binding-dt
+  namespace: pluaj-dev-dev
+subjects:
+- kind: ServiceAccount
+  name: cicd-service-account-dt
+  namespace: pluaj-dev-dev
+roleRef:
+  kind: ClusterRole
+  name: edit # El rol que creamos
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: cicd-binding-rbac
+  namespace: pluaj-dev-dev
+subjects:
+- kind: ServiceAccount
+  name: cicd-service-account-dt # La cuenta de servicio que creamos
+  namespace: pluaj-dev-dev
+roleRef:
+  kind: Role
+  name: rbac-edit # El rol que creamos
+  apiGroup: rbac.authorization.k8s.io

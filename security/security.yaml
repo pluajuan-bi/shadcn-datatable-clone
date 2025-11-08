@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  # El nombre que usarás para referenciar esta ServiceAccount
+  name: usuariojp-serviceaccount
+  # Opcional: El namespace donde se creará. Si se omite, se usará 'default'.
+  namespace: usuariojp
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: dashboard-usuariojp
+  # Este rol existirá en el namespace del proyecto
+  namespace: usuariojp
+rules:
+- apiGroups: ["", "apps", "autoscaling", "batch", "extensions", "networking.k8s.io", "storage.k8s.io"]
+  resources: ["configmaps", "endpoints", "events", "ingresses", "persistentvolumeclaims", "pods", "podtemplates", "replicationcontrollers", "resourcequotas", "secrets", "serviceaccounts", "services", "deployments", "daemonsets", "replicasets", "statefulsets", "horizontalpodautoscalers", "cronjobs", "jobs", "networkpolicies", "storageclasses"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["apps"]
+  resources: ["deployments/scale"]
+  verbs: ["*"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: usuariojp-dashboard-readonly-binding
+  namespace: usuariojp
+subjects:
+- kind: ServiceAccount
+  name: usuariojp-serviceaccount # La cuenta de servicio que creamos
+  namespace: usuariojp
+roleRef:
+  kind: Role
+  name: dashboard-usuariojp # El rol que creamos
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: global-reader
+rules:
+- apiGroups: [""]
+  resources: ["namespaces"]
+  verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: usuariojp-global-readonly-binding
+subjects:
+- kind: ServiceAccount
+  name: usuariojp-serviceaccount # La cuenta de servicio que creamos
+  namespace: usuariojp
+roleRef:
+  kind: ClusterRole
+  name: global-reader # El rol que creamos
+  apiGroup: rbac.authorization.k8s.io
