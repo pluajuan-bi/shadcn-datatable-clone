@@ -1,24 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: deployment-shadcn-data-table
+  name: deployment-shadcn-data-table-clone
   namespace: pluaj-dev-dev
   labels:
-    app: mi-app-dt
+    app: mi-app-dt-clone
     areanegocio: tecnologia
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: mi-app-dt
+      app: mi-app-dt-clone
   template:
     metadata:
       labels:
-        app: mi-app-dt
+        app: mi-app-dt-clone
     spec:
       containers:
-        - name: container-shadcn-data-table
-          image: juangrp/shadcn-datatable-practica:build-{{ tag }}   # Ajusta si subes a Docker Hub
+        - name: container-shadcn-data-table-clone
+          image: juangrp/shadcn-data-table-clone:build-{{ tag }}   # Ajusta si subes a Docker Hub
           imagePullPolicy: Always
           ports:
             - name: http
@@ -32,25 +32,25 @@ spec:
               memory: "1500Mi"
           envFrom:
             - configMapRef:
-                name: mi-configmap
+                name: mi-configmap-clone
             - secretRef:
-                name: mi-secret
+                name: mi-secret-clone
           volumeMounts:
             - name: datos
               mountPath: /app/data
       volumes:
         - name: datos
           persistentVolumeClaim:
-            claimName: mi-pvc-dt
+            claimName: mi-pvc-dt-clone
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: service-shadcn-data-table
+  name: service-shadcn-data-table-clone
   namespace: pluaj-dev-dev  # Asegúrate de que coincida con tu Deployment
 spec:
   selector:
-    app: mi-app-dt
+    app: mi-app-dt-clone
   ports:
     - name: http
       protocol: TCP
@@ -61,7 +61,7 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: mi-configmap
+  name: mi-configmap-clone
   namespace: pluaj-dev-dev
 data:
   DATABASE: "192.168.1.1"
@@ -69,7 +69,7 @@ data:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: mi-secret
+  name: mi-secret-clone
   namespace: pluaj-dev-dev
 type: Opaque
 data:
@@ -78,11 +78,11 @@ data:
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
-  name: route-shadcn-data-table
+  name: route-shadcn-data-table-clone
 spec:
   to:
     kind: Service
-    name: service-shadcn-data-table
+    name: service-shadcn-data-table-clone
   port:
     targetPort: http
   tls:
@@ -91,13 +91,13 @@ spec:
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: mi-hpa
+  name: mi-hpa-clone
   namespace: pluaj-dev-dev
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: deployment
-    name: deployment-shadcn-data-table
+    name: deployment-shadcn-data-table-clone
   minReplicas: 1
   maxReplicas: 3
   metrics:
@@ -112,7 +112,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: mi-pvc-dt
+  name: mi-pvc-dt-clone
   namespace: pluaj-dev-dev
 spec:
   accessModes:
