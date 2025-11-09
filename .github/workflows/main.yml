@@ -69,4 +69,4 @@ jobs:
       - name: Deploy files
         run: |
           helm show chart oci://registry-1.docker.io/juangrp/mi-chart --version 4
-          helm upgrade --install microservicio-2 oci://registry-1.docker.io/juangrp/mi-chart --version 4 --values values.yaml
+          helm upgrade --install microservicio-2 oci://registry-1.docker.io/juangrp/mi-chart --version 4 --values values.yaml --namespace pluaj-dev-dev 
