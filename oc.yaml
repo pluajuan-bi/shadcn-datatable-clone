@@ -22,7 +22,7 @@ spec:
           imagePullPolicy: Always
           ports:
             - name: http
-              containerPort: 3000
+              containerPort: 8082
           resources:
             requests:
               cpu: "500m"
@@ -54,8 +54,8 @@ spec:
   ports:
     - name: http
       protocol: TCP
-      port: 3000
-      targetPort: 3000
+      port: 8082
+      targetPort: 8082
   type: ClusterIP
 ---
 apiVersion: v1
