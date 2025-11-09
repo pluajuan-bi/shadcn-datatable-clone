@@ -29,7 +29,7 @@ public class Hola {
                 return;
             }
 
-            String response = "Prueba con Java - Juan Plua OpenShift";
+            String response = "Prueba con Java - Juan Plua OpenShift cors";
             exchange.getResponseHeaders().set("Content-Type", "text/plain; charset=UTF-8");
             exchange.sendResponseHeaders(200, response.getBytes("UTF-8").length);
             try (OutputStream os = exchange.getResponseBody()) {
