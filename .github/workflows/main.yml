@@ -4,7 +4,6 @@ on:
   push:
     branches: ["main"]
   workflow_dispatch:
-
 jobs:
   build:
     # El tipo de máquina virtual donde se ejecutará el job
@@ -15,7 +14,7 @@ jobs:
       # 1. Clona tu repositorio en la máquina virtual
       - name: Checkout repository
         uses: actions/checkout@v4
-        
+
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -29,7 +28,7 @@ jobs:
           images: ${{ secrets.DOCKER_USERNAME  }}/shadcn-data-table-clone
           tags: |
             type=raw,value=build-${{ github.run_number }}
-            
+
       - name: Build Docker image
         uses: docker/build-push-action@v5
         with:
@@ -37,7 +36,7 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          
+  
   deploy:
     needs: build
     runs-on: ubuntu-latest
@@ -60,13 +59,23 @@ jobs:
         with:
           openshift_server_url: https://api.rm3.7wse.p1.openshiftapps.com:6443
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+
+      - name: Validate Namespace Context
+        run: |
+          echo "Validando contexto en namespace pluaj-dev-dev"
+          oc project pluaj-dev-dev
+
       - name: Update Deployment tag
         run: |
           echo "Reemplazando {{ tag }} con ${{ github.run_number }}"
-          sed -i "s|{{ tag }}|${{ github.run_number }}|g" oc.yaml
+          sed -i "s|{{ tag }}|${{ github.run_number }}|g" values.yaml
           cat values.yaml
-          
-      - name: Deploy files
+
+      - name: Deploy file Helm Chart
         run: |
           helm show chart oci://registry-1.docker.io/juangrp/mi-chart --version 4
-          helm upgrade --install microservicio-2 oci://registry-1.docker.io/juangrp/mi-chart --version 4 --values values.yaml --namespace pluaj-dev-dev 
+          helm upgrade --install microservicio-2 oci://registry-1.docker.io/juangrp/mi-chart \
+            --version 4 \
+            --values values.yaml \
+            --namespace pluaj-dev-dev \
+            --atomic --wait
